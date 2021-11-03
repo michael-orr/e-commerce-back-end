@@ -16,20 +16,14 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   // find a single tag by its `id`
   // be sure to include its associated Product data
-  try{
-    const tagData = await Tag.get(
-      {
-        category: req.body.tag_name,
-      },
-      {
-        where: {
-          id: req.params.id,
-        },
-      }
-    )
-    } catch (err) {
-      res.status(500).json(err);
-    }
+  Tag.findAll({
+    where: {
+      id: req.params.id,
+    },
+    include: [Product],
+    }).then(
+    (tagData) => {res.json(tagData)}
+   );
 });
 
 router.post('/', async (req, res) => {
@@ -42,22 +36,23 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
-  // update a tag's name by its `id` value
-  try{
+router.put("/:id", async (req, res) => {
+  
+  // update a tagname by its `id` value
+  try {
     const tagData = await Tag.update(
-      {
-        category: req.body.tag_name
-      },
+      req.body,
       {
         where: {
           id: req.params.id,
         },
       }
-    )
-    } catch (err) {
-      res.status(500).json(err);
-    }
+    );
+    res.json(tagData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
 });
 
 router.delete('/:id', async (req, res) => {
